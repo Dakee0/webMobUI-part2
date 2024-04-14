@@ -1,30 +1,70 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, computed } from 'vue';
+import bitcoin from './assets/bitcoin.png';
+
+const btcAmount = ref(0);
+const chfAmount = ref(0);
+//const btcToChfRate = ref(58880);
+
+let btcToChfRate = ref(null);
+
+async function fetchBtcRate() {
+    try {
+        const fetchedAPI = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=CHF`);
+        const dataAPI = await fetchedAPI.json();
+        btcToChfRate.value = dataAPI.bitcoin.chf;
+        console.log("Taux actuel BTC à CHF:", btcToChfRate.value);
+
+    } catch (error) {
+      console.error("Erreur lors de la récupération du taux de change:", error);
+    }
+}
+
+fetchBtcRate();
+
+
+//Changement de la valeur de BTC
+const computedBtc = computed({
+  get: () => btcAmount.value,
+  set: (val) => {
+    btcAmount.value = val;
+    if (btcToChfRate.value) {
+      chfAmount.value = val * btcToChfRate.value;
+    }
+  }
+});
+
+//Changement de la valeur de CHF
+const computedChf = computed({
+  get: () => chfAmount.value,
+  set: (val) => {
+    chfAmount.value = val;
+    if (btcToChfRate.value) {
+      btcAmount.value = val / btcToChfRate.value;
+    }
+  }
+});
+
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="converter">
+    <img :src="bitcoin" alt="Logo BTC" style="max-width: 300px; max-height: 100px;">
+    <h1>Convertisseur BTC/CHF</h1>
+    <p>
+      BTC
+      <br>
+      <input type="number" v-model="computedBtc" placeholder="Entrez le montant en BTC">
+    </p>
+    <p>
+      CHF
+      <br>
+      <input type="number" v-model="computedChf" placeholder="Entrez le montant en CHF">
+    </p>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
