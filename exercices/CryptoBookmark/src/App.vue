@@ -1,8 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import FavoriteButton from './bookmark/FavoriteButton.vue';
 
 const coins = ref([]);
-const searchQuery = ref('');
+
+// État pour afficher uniquement les favoris
+const showOnlyFavorites = ref(false);
+
+const favorites = ref(JSON.parse(localStorage.getItem('favorites')) || []);
 
 // Requête de la liste de tous les coins à l'api
 const fetchCoins = async () => {
@@ -14,6 +19,20 @@ const fetchCoins = async () => {
   }
 };
 
+fetchCoins();
+
+//Filre les coins favoris
+const filteredCoins = computed(() => {
+  if (showOnlyFavorites.value) {
+    return coins.value.filter(coin => favorites.value.includes(coin.id));
+  }
+  return coins.value;
+});
+
+// Mets à jour les favoris
+const handleFavoritesUpdate = (updatedFavorites) => {
+  favorites.value = updatedFavorites;
+};
 
 fetchCoins();
 
@@ -22,10 +41,14 @@ fetchCoins();
 <template>
   <div>
     <h1>Crypto-currencies</h1>
+    <button @click="showOnlyFavorites = !showOnlyFavorites">
+      {{ showOnlyFavorites ? 'Voir Tous' : 'Voir Favoris' }}
+    </button>
     <ul>
-      <li v-for="coin in coins" :key="coin.id">
+      <li v-for="coin in filteredCoins" :key="coin.id">
         <img :src="coin.image" :alt="coin.name" style="width: 20px; height: 20px;">
         {{ coin.name }} ({{ coin.symbol.toUpperCase() }}) - ${{ coin.current_price }}
+        <FavoriteButton :coinId="coin.id" @updateFavorites="handleFavoritesUpdate" />
       </li>
     </ul>
   </div>
