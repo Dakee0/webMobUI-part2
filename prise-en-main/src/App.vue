@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, watch } from 'vue';
+import BaseInputNumber from './components/BaseInputNumber.vue';
 
 const kelvin = ref(273.15);
 
@@ -46,10 +47,16 @@ watch(kelvin, (newValue) => {
       <input v-model.number="farenheit" type="number" placeholder="Farenheit">
     </p>
     <br>
-    <h2>Testings</h2>
+    <h2>Tests</h2>
     <p>Celsius: {{ celsius }}</p>
     <p>Farenheit: {{ farenheit }}</p>
   </div>
+
+  <h4>Test selon code du prof pour arrondi</h4>
+  <BaseInputNumber unit="°C" v-model="celsius" />
+  <BaseInputNumber unit="°F" v-model="farenheit" />
+  <BaseInputNumber unit="K" v-model="kelvinComputed" :decimal-places="2" step="0.01" min="0" id="kelvin" />
+
 
 </template>
 
