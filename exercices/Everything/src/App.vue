@@ -3,11 +3,9 @@
   import TheHeader from './components/TheHeader.vue';
   import TheNav from './components/TheNav.vue';
   import AppSchedule from './AppSchedule.vue';
-  import AppTemperature from './AppTemperature.vue';
 
   const routes = {
-    '#schedule': AppSchedule,
-    '#temperature': AppTemperature,
+    '#schedule': AppSchedule
   }
 
   const currentPath = ref(window.location.hash)
@@ -16,7 +14,7 @@
   })
 
   const currentView = computed(() => {
-    return routes[currentPath.value] ?? AppTemperature;
+    return routes[currentPath.value]  || AppSchedule;
   })
 </script>
 
@@ -27,6 +25,10 @@
 </template>
 
 <style>
+  ul {
+    list-style-type: none; /* Enlève les puces */
+    padding: 0;
+  }
   * {
     margin: 0;
   }
