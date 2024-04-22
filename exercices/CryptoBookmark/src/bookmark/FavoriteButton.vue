@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits, watchEffect } from 'vue';
+import { ref, watchEffect } from 'vue';
 
 // Props reçues de App.vue
 const props = defineProps({
